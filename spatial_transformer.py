@@ -29,6 +29,7 @@ any existing CNN with very little modification.
 from __future__ import print_function
 
 import argparse
+import gzip
 import logging
 import os
 from os import path
@@ -299,19 +300,26 @@ def main():
     # process and save as torch files
     LOG.info('Processing dataset...')
 
+    files = os.listdir(data_dir)
+    for file in files:
+        full_path = path.join(data_dir, file)
+        save_path = path.join(training_dir, file.replace('.gz', ''))
+        with open(full_path, 'wb') as out_f, gzip.GzipFile(save_path) as zip_f:
+            out_f.write(zip_f.read())
+
     training_set = (
-        mnist.read_image_file(os.path.join(data_dir, 'train-images-idx3-ubyte.gz')),
-        mnist.read_label_file(os.path.join(data_dir, 'train-labels-idx1-ubyte.gz'))
+        mnist.read_image_file(path.join(data_dir, 'train-images-idx3-ubyte')),
+        mnist.read_label_file(path.join(data_dir, 'train-labels-idx1-ubyte'))
     )
     test_set = (
-        mnist.read_image_file(os.path.join(data_dir, 't10k-images-idx3-ubyte.gz')),
-        mnist.read_label_file(os.path.join(data_dir, 't10k-labels-idx1-ubyte.gz'))
+        mnist.read_image_file(path.join(data_dir, 't10k-images-idx3-ubyte')),
+        mnist.read_label_file(path.join(data_dir, 't10k-labels-idx1-ubyte'))
     )
-    os.makedirs(os.path.join(training_dir, mnist.MNIST.raw_folder))
-    os.makedirs(os.path.join(training_dir, mnist.MNIST.processed_folder))
-    with open(os.path.join(training_dir, mnist.MNIST.processed_folder, mnist.MNIST.training_file), 'wb') as f:
+    os.makedirs(path.join(training_dir, mnist.MNIST.raw_folder))
+    os.makedirs(path.join(training_dir, mnist.MNIST.processed_folder))
+    with open(path.join(training_dir, mnist.MNIST.processed_folder, mnist.MNIST.training_file), 'wb') as f:
         torch.save(training_set, f)
-    with open(os.path.join(training_dir, mnist.MNIST.processed_folder, mnist.MNIST.test_file), 'wb') as f:
+    with open(path.join(training_dir, mnist.MNIST.processed_folder, mnist.MNIST.test_file), 'wb') as f:
         torch.save(test_set, f)
 
     LOG.info('Dataset processing done!')
