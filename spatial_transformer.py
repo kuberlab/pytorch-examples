@@ -308,12 +308,12 @@ def main():
             out_f.write(zip_f.read())
 
     training_set = (
-        mnist.read_image_file(path.join(data_dir, 'train-images-idx3-ubyte')),
-        mnist.read_label_file(path.join(data_dir, 'train-labels-idx1-ubyte'))
+        mnist.read_image_file(path.join(training_dir, 'train-images-idx3-ubyte')),
+        mnist.read_label_file(path.join(training_dir, 'train-labels-idx1-ubyte'))
     )
     test_set = (
-        mnist.read_image_file(path.join(data_dir, 't10k-images-idx3-ubyte')),
-        mnist.read_label_file(path.join(data_dir, 't10k-labels-idx1-ubyte'))
+        mnist.read_image_file(path.join(training_dir, 't10k-images-idx3-ubyte')),
+        mnist.read_label_file(path.join(training_dir, 't10k-labels-idx1-ubyte'))
     )
     os.makedirs(path.join(training_dir, mnist.MNIST.raw_folder))
     os.makedirs(path.join(training_dir, mnist.MNIST.processed_folder))
