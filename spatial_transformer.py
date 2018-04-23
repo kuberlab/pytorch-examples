@@ -304,7 +304,7 @@ def main():
     for file in files:
         full_path = path.join(data_dir, file)
         save_path = path.join(training_dir, file.replace('.gz', ''))
-        with open(full_path, 'wb') as out_f, gzip.GzipFile(save_path) as zip_f:
+        with open(save_path, 'wb') as out_f, gzip.GzipFile(full_path) as zip_f:
             out_f.write(zip_f.read())
 
     training_set = (
