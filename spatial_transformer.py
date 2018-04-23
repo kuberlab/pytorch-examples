@@ -298,31 +298,35 @@ def main():
     data_dir = args.data_dir
     training_dir = args.training_dir
 
-    # process and save as torch files
-    LOG.info('Processing dataset...')
+    # If already processed
+    if (not path.exists(path.join(training_dir, mnist.MNIST.processed_folder, mnist.MNIST.training_file)) or
+            not path.join(training_dir, mnist.MNIST.processed_folder, mnist.MNIST.test_file)):
+        # process and save as torch files
+        LOG.info('Processing dataset...')
 
-    files = os.listdir(data_dir)
-    for file in files:
-        full_path = path.join(data_dir, file)
-        save_path = path.join(training_dir, file.replace('.gz', ''))
-        with open(save_path, 'wb') as out_f, gzip.GzipFile(full_path) as zip_f:
-            out_f.write(zip_f.read())
+        files = os.listdir(data_dir)
+        for file in files:
+            full_path = path.join(data_dir, file)
+            save_path = path.join(training_dir, file.replace('.gz', ''))
+            with open(save_path, 'wb') as out_f, gzip.GzipFile(full_path) as zip_f:
+                out_f.write(zip_f.read())
 
-    training_set = (
-        mnist.read_image_file(path.join(training_dir, 'train-images-idx3-ubyte')),
-        mnist.read_label_file(path.join(training_dir, 'train-labels-idx1-ubyte'))
-    )
-    test_set = (
-        mnist.read_image_file(path.join(training_dir, 't10k-images-idx3-ubyte')),
-        mnist.read_label_file(path.join(training_dir, 't10k-labels-idx1-ubyte'))
-    )
-    os.makedirs(path.join(training_dir, mnist.MNIST.processed_folder))
-    with open(path.join(training_dir, mnist.MNIST.processed_folder, mnist.MNIST.training_file), 'wb') as f:
-        torch.save(training_set, f)
-    with open(path.join(training_dir, mnist.MNIST.processed_folder, mnist.MNIST.test_file), 'wb') as f:
-        torch.save(test_set, f)
+        training_set = (
+            mnist.read_image_file(path.join(training_dir, 'train-images-idx3-ubyte')),
+            mnist.read_label_file(path.join(training_dir, 'train-labels-idx1-ubyte'))
+        )
+        test_set = (
+            mnist.read_image_file(path.join(training_dir, 't10k-images-idx3-ubyte')),
+            mnist.read_label_file(path.join(training_dir, 't10k-labels-idx1-ubyte'))
+        )
+        os.makedirs(path.join(training_dir, mnist.MNIST.processed_folder))
+        with open(path.join(training_dir, mnist.MNIST.processed_folder, mnist.MNIST.training_file), 'wb') as f:
+            torch.save(training_set, f)
+        with open(path.join(training_dir, mnist.MNIST.processed_folder, mnist.MNIST.test_file), 'wb') as f:
+            torch.save(test_set, f)
 
-    LOG.info('Dataset processing done!')
+        LOG.info('Dataset processing done!')
+
     # Training dataset
     train_loader = torch.utils.data.DataLoader(
         datasets.MNIST(root=training_dir, train=True, download=False,
