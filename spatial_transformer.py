@@ -39,7 +39,9 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 import torchvision
-from torchvision import datasets, transforms
+from torchvision import datasets
+from torchvision import transforms
+from torchvision.datasets import mnist
 from torch.autograd import Variable
 import numpy as np
 import scipy.misc
@@ -292,17 +294,37 @@ def main():
     # standard convolutional network augmented with a spatial transformer
     # network.
     data_dir = args.data_dir
+    training_dir = args.training_dir
 
+    # process and save as torch files
+    LOG.info('Processing dataset...')
+
+    training_set = (
+        mnist.read_image_file(os.path.join(data_dir, 'train-images-idx3-ubyte.gz')),
+        mnist.read_label_file(os.path.join(data_dir, 'train-labels-idx1-ubyte.gz'))
+    )
+    test_set = (
+        mnist.read_image_file(os.path.join(data_dir, 't10k-images-idx3-ubyte.gz')),
+        mnist.read_label_file(os.path.join(data_dir, 't10k-labels-idx1-ubyte.gz'))
+    )
+    os.makedirs(os.path.join(training_dir, mnist.MNIST.raw_folder))
+    os.makedirs(os.path.join(training_dir, mnist.MNIST.processed_folder))
+    with open(os.path.join(training_dir, mnist.MNIST.processed_folder, mnist.MNIST.training_file), 'wb') as f:
+        torch.save(training_set, f)
+    with open(os.path.join(training_dir, mnist.MNIST.processed_folder, mnist.MNIST.test_file), 'wb') as f:
+        torch.save(test_set, f)
+
+    LOG.info('Dataset processing done!')
     # Training dataset
     train_loader = torch.utils.data.DataLoader(
-        datasets.MNIST(root=data_dir, train=True, download=False,
+        datasets.MNIST(root=training_dir, train=True, download=False,
                        transform=transforms.Compose([
                            transforms.ToTensor(),
                            transforms.Normalize((0.1307,), (0.3081,))
                        ])), batch_size=args.batch_size, shuffle=True, num_workers=4)
     # Test dataset
     test_loader = torch.utils.data.DataLoader(
-        datasets.MNIST(root=data_dir, train=False, transform=transforms.Compose([
+        datasets.MNIST(root=training_dir, train=False, transform=transforms.Compose([
             transforms.ToTensor(),
             transforms.Normalize((0.1307,), (0.3081,))
         ])), batch_size=args.batch_size, shuffle=True, num_workers=4)
