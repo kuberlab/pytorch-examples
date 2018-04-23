@@ -34,6 +34,7 @@ import logging
 import os
 from os import path
 
+import imageio
 from mlboardclient.api import client
 import torch
 import torch.nn as nn
@@ -271,8 +272,8 @@ def visualize_stn(test_loader, model, out_dir):
     if not path.isdir(out_dir):
         raise RuntimeError('Training dir must be directory!')
 
-    in_image_name = 'dataset_images.png'
-    out_image_name = 'transformed_images.png'
+    in_image_name = path.join(out_dir, 'dataset_images.png')
+    out_image_name = path.join(out_dir, 'transformed_images.png')
     scipy.misc.imsave(in_image_name, in_grid)
     scipy.misc.imsave(out_image_name, out_grid)
     # Plot the results side-by-side
@@ -315,7 +316,6 @@ def main():
         mnist.read_image_file(path.join(training_dir, 't10k-images-idx3-ubyte')),
         mnist.read_label_file(path.join(training_dir, 't10k-labels-idx1-ubyte'))
     )
-    os.makedirs(path.join(training_dir, mnist.MNIST.raw_folder))
     os.makedirs(path.join(training_dir, mnist.MNIST.processed_folder))
     with open(path.join(training_dir, mnist.MNIST.processed_folder, mnist.MNIST.training_file), 'wb') as f:
         torch.save(training_set, f)
