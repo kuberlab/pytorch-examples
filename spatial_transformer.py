@@ -34,7 +34,6 @@ import logging
 import os
 from os import path
 
-import imageio
 from mlboardclient.api import client
 import torch
 import torch.nn as nn
