@@ -221,7 +221,7 @@ def test(test_loader, model, use_mlboard=True):
         )
     )
     if use_mlboard:
-        mlboard.update_task_info({'accuracy': accuracy, 'test_loss': test_loss})
+        mlboard.update_task_info({'accuracy': accuracy / 100., 'test_loss': test_loss})
 
 ######################################################################
 # Visualizing the STN results
