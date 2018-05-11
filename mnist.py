@@ -199,7 +199,7 @@ def save_checkpoint(state, filename):
 model_path = path.join(args.out_dir, 'checkpoint.pth.tar')
 LOG.info('Saving model to %s...' % model_path)
 
-os.makedirs(model_path)
+os.makedirs(args.out_dir)
 
 save_checkpoint({
     'epoch': args.epochs + 1,
