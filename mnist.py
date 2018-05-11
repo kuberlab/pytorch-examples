@@ -5,6 +5,7 @@ import logging
 import os
 from os import path
 
+from mlboardclient.api import client
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -52,8 +53,15 @@ parser.add_argument(
     '--out-dir',
     default=path.join(os.environ.get('TRAINING_DIR'), os.environ.get('BUILD_ID'))
 )
+parser.add_argument(
+    '--skip-mlboard',
+    default=False,
+    type=bool,
+)
 args = parser.parse_args()
 use_cuda = not args.no_cuda and torch.cuda.is_available()
+use_mlboard = not args.skip_mlboard
+mlboard = client.Client()
 
 LOG.info('-' * 53)
 if use_cuda:
@@ -149,9 +157,12 @@ def train(epoch):
         loss.backward()
         optimizer.step()
         if batch_idx % args.log_interval == 0:
+            train_loss = loss.item()
             LOG.info('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
                 epoch, batch_idx * len(data), len(train_loader.dataset),
-                100. * batch_idx / len(train_loader), loss.item()))
+                100. * batch_idx / len(train_loader), train_loss))
+            if use_mlboard:
+                mlboard.update_task_info({'train_loss': train_loss, 'train_epoch': epoch})
 
 
 def test():
@@ -167,9 +178,12 @@ def test():
             correct += pred.eq(target.view_as(pred)).sum().item()
 
     test_loss /= len(test_loader.dataset)
+    accuracy = 100. * correct / len(test_loader.dataset)
     LOG.info('Test set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n'.format(
-        test_loss, correct, len(test_loader.dataset),
-        100. * correct / len(test_loader.dataset)))
+        test_loss, correct, len(test_loader.dataset), accuracy)
+    )
+    if use_mlboard:
+        mlboard.update_task_info({'test_loss': test_loss, 'accuracy': accuracy / 100.})
 
 
 for epoch in range(1, args.epochs + 1):
@@ -181,15 +195,18 @@ def save_checkpoint(state, filename):
     torch.save(state, filename)
 
 
-model_dir = path.join(args.out_dir, 'checkpoint.pth.tar')
-LOG.info('Saving model to %s...' % model_dir)
+model_path = path.join(args.out_dir, 'checkpoint.pth.tar')
+LOG.info('Saving model to %s...' % model_path)
 
-os.makedirs(model_dir)
+os.makedirs(model_path)
 
 save_checkpoint({
     'epoch': args.epochs + 1,
     'state_dict': model.state_dict(),
     'optimizer': optimizer.state_dict(),
-}, model_dir)
+}, model_path)
+
+if use_mlboard:
+    mlboard.update_task_info({'checkpoint_path': model_path})
 
 LOG.info('Saved.')
