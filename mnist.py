@@ -49,14 +49,11 @@ parser.add_argument(
     '--training_dir',
     default=os.environ.get('TRAINING_DIR'),
 )
-parser.add_argument(
-    '--out-dir',
-    default=path.join(os.environ.get('TRAINING_DIR'), os.environ.get('BUILD_ID'))
-)
+parser.add_argument('--out-dir')
 parser.add_argument(
     '--skip-mlboard',
+    action='store_true',
     default=False,
-    type=bool,
 )
 args = parser.parse_args()
 use_cuda = not args.no_cuda and torch.cuda.is_available()
@@ -199,7 +196,8 @@ def save_checkpoint(state, filename):
 model_path = path.join(args.out_dir, 'checkpoint.pth.tar')
 LOG.info('Saving model to %s...' % model_path)
 
-os.makedirs(args.out_dir)
+if not path.exists(args.out_dir):
+    os.makedirs(args.out_dir)
 
 save_checkpoint({
     'epoch': args.epochs + 1,

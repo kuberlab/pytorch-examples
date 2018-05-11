@@ -80,8 +80,8 @@ def get_parser():
     )
     parser.add_argument(
         '--skip-mlboard',
+        action='store_true',
         default=False,
-        type=bool,
     )
     return parser
 
