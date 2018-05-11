@@ -161,6 +161,7 @@ def train(epoch):
             LOG.info('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
                 epoch, batch_idx * len(data), len(train_loader.dataset),
                 100. * batch_idx / len(train_loader), train_loss))
+        if batch_idx % (args.log_interval * 10) == 0:
             if use_mlboard:
                 mlboard.update_task_info({'train_loss': train_loss, 'train_epoch': epoch})
 
