@@ -55,6 +55,13 @@ parser.add_argument(
 args = parser.parse_args()
 use_cuda = not args.no_cuda and torch.cuda.is_available()
 
+LOG.info('-' * 53)
+if use_cuda:
+    LOG.info('Use CUDA for processing.')
+else:
+    LOG.info('Do not use CUDA.')
+LOG.info('-' * 53)
+
 torch.manual_seed(args.seed)
 
 device = torch.device("cuda" if use_cuda else "cpu")
@@ -160,7 +167,7 @@ def test():
             correct += pred.eq(target.view_as(pred)).sum().item()
 
     test_loss /= len(test_loader.dataset)
-    LOG.info('\nTest set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n'.format(
+    LOG.info('Test set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n'.format(
         test_loss, correct, len(test_loader.dataset),
         100. * correct / len(test_loader.dataset)))
 
@@ -175,9 +182,12 @@ def save_checkpoint(state, filename):
 
 
 model_dir = path.join(args.out_dir, 'checkpoint.pth.tar')
+LOG.info('Saving model to %s...' % model_dir)
+
 save_checkpoint({
     'epoch': args.epochs + 1,
     'state_dict': model.state_dict(),
     'optimizer': optimizer.state_dict(),
 }, model_dir)
 
+LOG.info('Saved.')
