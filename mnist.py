@@ -199,11 +199,7 @@ LOG.info('Saving model to %s...' % model_path)
 if not path.exists(args.out_dir):
     os.makedirs(args.out_dir)
 
-save_checkpoint({
-    'epoch': args.epochs + 1,
-    'state_dict': model.state_dict(),
-    'optimizer': optimizer.state_dict(),
-}, model_path)
+save_checkpoint(model, model_path)
 
 if use_mlboard:
     mlboard.update_task_info({'checkpoint_path': model_path})

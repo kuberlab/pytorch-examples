@@ -25,9 +25,9 @@ class Net(nn.Module):
 
 
 print('loading torch model')
-checkpoint = torch.load('train/checkpoint.pth.tar')
-model = Net()
-model.load_state_dict(checkpoint['state_dict'])
+model = torch.load('train/checkpoint.pth.tar')
+#model = Net()
+#model.load_state_dict(checkpoint)
 _input = torch.Tensor(1, 1, 28, 28)
 
 print('exporting onnx model')
