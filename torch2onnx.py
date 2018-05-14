@@ -1,18 +1,8 @@
 from __future__ import print_function
-import argparse
-import gzip
-import logging
-import os
-from os import path
 
-import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.onnx
-import torch.optim as optim
-from torchvision import datasets
-from torchvision import transforms
-from torchvision.datasets import mnist
 
 
 class Net(nn.Module):
@@ -33,13 +23,14 @@ class Net(nn.Module):
         x = self.fc2(x)
         return F.log_softmax(x, dim=1)
 
+
 print('loading torch model')
 checkpoint = torch.load('train/checkpoint.pth.tar')
 model = Net()
 model.load_state_dict(checkpoint['state_dict'])
-_input = torch.FloatTensor(64, 1, 28, 28)
+_input = torch.Tensor(1, 1, 28, 28)
 
 print('exporting onnx model')
 # Export to ONNX
-torch.onnx.export(model, _input, "train/model.onnx")
-
+model.train(False)
+torch_out = torch.onnx._export(model, _input, "train/model.onnx", export_params=True)
