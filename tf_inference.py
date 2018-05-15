@@ -25,7 +25,6 @@ with tf.Session() as persisted_sess:
     # test = np.random.rand(1, 1, 28, 28).astype(np.float32).argmax()
     inp = persisted_sess.graph.get_tensor_by_name('0:0')
     out = persisted_sess.graph.get_tensor_by_name('LogSoftmax:0')
-    __import__('pdb').set_trace()
 
     for f_name in files:
         data = imageio.imread(f_name).reshape(1, 1, 28, 28)
