@@ -2,7 +2,6 @@ import os
 from os import path
 
 import imageio
-import numpy as np
 import tensorflow as tf
 from tensorflow.python.platform import gfile
 

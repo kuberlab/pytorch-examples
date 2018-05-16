@@ -1,4 +1,3 @@
-import os
 from os import path
 import shutil
 
@@ -46,9 +45,7 @@ with tf.Session() as persisted_sess:
             tf_rep.predict_net.tensor_dict[i].name
         )
         i_tensors.append(t)
-        tensor_info = tf.saved_model.utils.build_tensor_info(
-            get_placeholder(t)
-        )
+        tensor_info = tf.saved_model.utils.build_tensor_info(t)
         inputs[t.name.split(':')[0].lower()] = tensor_info
         print(
             'input tensor [name=%s, type=%s, shape=%s]'
@@ -61,9 +58,7 @@ with tf.Session() as persisted_sess:
             tf_rep.predict_net.tensor_dict[i].name
         )
         o_tensors.append(t)
-        tensor_info = tf.saved_model.utils.build_tensor_info(
-            get_placeholder(t)
-        )
+        tensor_info = tf.saved_model.utils.build_tensor_info(t)
         outputs[t.name.split(':')[0]] = tensor_info
         print(
             'output tensor [name=%s, type=%s, shape=%s]'
