@@ -17,15 +17,6 @@ print('prepare tf model')
 tf_rep = prepare(onnx_model)
 
 
-def get_placeholder(tensor):
-    input_tensor = tf.placeholder(
-        dtype=tensor.dtype,
-        shape=tensor.shape,
-        name=tensor.name.split(':')[0]
-    )
-    return input_tensor
-
-
 if path.exists(export_path):
     shutil.rmtree(export_path)
 
@@ -66,7 +57,6 @@ with tf.Session() as persisted_sess:
         )
 
     feed_dict = {}
-    outs = []
     for i in i_tensors:
         feed_dict[i] = np.random.rand(*i.shape.as_list()).astype(i.dtype.name)
 
