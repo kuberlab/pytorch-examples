@@ -135,7 +135,6 @@ if __name__ == '__main__':
 
     device = torch.device("cuda" if use_cuda else "cpu")
 
-    kwargs = {'num_workers': 1, 'pin_memory': True} if use_cuda else {}
     data_dir = args.data_dir
     training_dir = args.training_dir
 
@@ -190,7 +189,7 @@ if __name__ == '__main__':
         train(epoch)
         test()
 
-    model_path = path.join(args.out_dir, 'checkpoint.pth.tar')
+    model_path = path.join(args.out_dir, 'model.pth')
     LOG.info('Saving model to %s...' % model_path)
 
     if not path.exists(args.out_dir):
