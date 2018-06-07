@@ -108,12 +108,14 @@ if __name__ == '__main__':
     parser.add_argument(
         '--data-dir',
         default=os.environ.get('DATA_DIR'),
+        required=True,
     )
     parser.add_argument(
         '--training_dir',
         default=os.environ.get('TRAINING_DIR'),
+        required=True,
     )
-    parser.add_argument('--out-dir')
+    parser.add_argument('--out-dir', required=True)
     parser.add_argument(
         '--skip-mlboard',
         action='store_true',
@@ -137,6 +139,9 @@ if __name__ == '__main__':
 
     data_dir = args.data_dir
     training_dir = args.training_dir
+
+    if not path.exists(training_dir):
+        os.makedirs(training_dir)
 
     # If already processed
     if (not path.exists(path.join(training_dir, mnist.MNIST.processed_folder, mnist.MNIST.training_file)) or
