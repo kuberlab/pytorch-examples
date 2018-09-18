@@ -35,16 +35,16 @@ if __name__ == '__main__':
     with tf.Session() as persisted_sess:
         print("load graph")
         persisted_sess.graph.as_default()
-        tf.import_graph_def(tf_rep.predict_net.graph.as_graph_def(), name='')
+        tf.import_graph_def(tf_rep.graph.as_graph_def(), name='')
 
         i_tensors = []
         o_tensors = []
         inputs = {}
         outputs = {}
 
-        for i in tf_rep.predict_net.external_input:
+        for i in tf_rep.inputs:
             t = persisted_sess.graph.get_tensor_by_name(
-                tf_rep.predict_net.tensor_dict[i].name
+                tf_rep.tensor_dict[i].name
             )
             i_tensors.append(t)
             tensor_info = tf.saved_model.utils.build_tensor_info(t)
@@ -55,9 +55,9 @@ if __name__ == '__main__':
             )
         print('')
 
-        for i in tf_rep.predict_net.external_output:
+        for i in tf_rep.outputs:
             t = persisted_sess.graph.get_tensor_by_name(
-                tf_rep.predict_net.tensor_dict[i].name
+                tf_rep.tensor_dict[i].name
             )
             o_tensors.append(t)
             tensor_info = tf.saved_model.utils.build_tensor_info(t)
