@@ -27,7 +27,7 @@ if __name__ == '__main__':
     onnx.checker.check_model(onnx_model)
 
     print('prepare tf model')
-    tf_rep = prepare(onnx_model)
+    tf_rep = prepare(onnx_model, strict=False)
 
     if path.exists(export_path):
         shutil.rmtree(export_path)
